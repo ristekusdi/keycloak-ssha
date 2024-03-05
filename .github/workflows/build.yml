@@ -24,7 +24,6 @@ jobs:
           path: released
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'ref/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: released/*.jar
-          tag_name: ${{ github.ref }}
