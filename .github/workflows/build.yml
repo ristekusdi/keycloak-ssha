@@ -25,3 +25,4 @@ jobs:
         if: startsWith(github.ref, 'ref/tags/')
         with:
           files: released/*.jar
+          tag_name: github.ref
