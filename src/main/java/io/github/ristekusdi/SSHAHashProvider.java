@@ -62,7 +62,10 @@ public class SSHAHashProvider implements PasswordHashProvider {
 
         // Hash in hex value
         String hash = passwordCredentialModel.getPasswordSecretData().getValue();
-
+        System.out.println("rawPassword = " + rawPassword);
+        System.out.println("hash = " + hash);
+        System.out.println("hashedPassword = " + hash);
+        System.out.println("hex salt = " + strSalt);
         return hashedPassword.equals(hash);
     }
 
