@@ -4,7 +4,10 @@ import org.keycloak.credential.hash.PasswordHashProvider;
 import org.keycloak.models.PasswordPolicy;
 import org.keycloak.models.credential.PasswordCredentialModel;
 
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.Base64;
 
 public class SSHAHashProvider implements PasswordHashProvider {
@@ -33,15 +36,16 @@ public class SSHAHashProvider implements PasswordHashProvider {
 
     @Override
     public boolean verify(String rawPassword, PasswordCredentialModel passwordCredentialModel) {
-        byte[] decodedSalt = Base64.getDecoder().decode(passwordCredentialModel.getPasswordSecretData().getSalt());
-        String strSalt = new String(decodedSalt);
+        String hashedPassword = "";
+        String hash = passwordCredentialModel.getPasswordSecretData().getValue();
+        String strSalt = new String(passwordCredentialModel.getPasswordSecretData().getSalt(), StandardCharsets.UTF_8);
+
         // Convert hex salt to bytes
         byte[] saltBytes = hexStringToByteArray(strSalt);
 
         // Concatenate the plain password and salt bytes
         byte[] passwordWithSaltBytes = concatenateByteArrays(rawPassword.getBytes(), saltBytes);
 
-        String hashedPassword = "";
         try {
             // Create a MessageDigest instance for SHA-1
             MessageDigest messageDigest = MessageDigest.getInstance(ALGORITHM);
@@ -60,12 +64,12 @@ public class SSHAHashProvider implements PasswordHashProvider {
             // Fail silently
         }
 
-        // Hash in hex value
-        String hash = passwordCredentialModel.getPasswordSecretData().getValue();
         System.out.println("rawPassword = " + rawPassword);
         System.out.println("hash = " + hash);
-        System.out.println("hashedPassword = " + hash);
-        System.out.println("hex salt = " + strSalt);
+        System.out.println("hashedPassword = " + hashedPassword);
+        System.out.println("str salt = " + strSalt);
+        System.out.println("byte salt = " + Arrays.toString(passwordCredentialModel.getPasswordSecretData().getSalt()));
+
         return hashedPassword.equals(hash);
     }
 
